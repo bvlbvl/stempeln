@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stempeln/options_route.dart';
 
 void main() => runApp(MyApp());
 
@@ -136,12 +137,28 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
   TimeOfDay _start = TimeOfDay.now();
-  TimeOfDay _end;
+  TimeOfDay _end = TimeOfDay.now();
   Duration _break = Duration(hours: 0, minutes: 45);
   Duration _weeklyWorkingTime = Duration(hours: 40, minutes: 0);
   int _numberOfWorkingDayPerWeek = 5;
+
+  //needed for menu
+/*
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  void showInSnackBar(String value) {
+    print("-------------------------");
+    print(_scaffoldKey.currentState);
+    _scaffoldKey.currentState.showSnackBar(SnackBar(
+      content: Text(value),
+    ));
+  }
+
+  void showMenuSelection(String value) {
+    showInSnackBar('You selected: $value');
+  }*/
+
 
   TimeOfDay _calculateEnd() {
     Duration _hoursPerDayWithBreak =
@@ -155,6 +172,12 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _calculateEnd();
+  }
+
+  @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
@@ -163,10 +186,22 @@ class _MyHomePageState extends State<MyHomePage> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     return Scaffold(
+      //key: _scaffoldKey,
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
+
+        actions: <Widget>[
+          PopupMenuButton<String>(
+              onSelected: onSelectionOptions,
+              itemBuilder: (BuildContext context) =>
+              <PopupMenuItem<String>>[
+                const PopupMenuItem<String>(
+                    child: Text('Einstelungen'),
+                    value: "Einstellungen value")
+              ])
+        ],
       ),
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
@@ -195,7 +230,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 style: Theme.of(context).textTheme.display1,
               ),
             ),
-
             _TimePicker(
               labelText: 'From',
               selectedTime: _start,
@@ -222,6 +256,15 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
+    );
+  }
+
+  void onSelectionOptions(String value) {
+    print("---------");
+    print(value);
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => OptionsRoute()),
     );
   }
 }
