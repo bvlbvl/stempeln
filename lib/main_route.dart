@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stempeln/options_route.dart';
+import 'package:stempeln/persistentData.dart';
 
 void main() => runApp(MyApp());
 
@@ -137,44 +138,44 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  var persData = PersistentData();
   TimeOfDay _start = TimeOfDay.now();
   TimeOfDay _end = TimeOfDay.now();
   Duration _break = Duration(hours: 0, minutes: 45);
   Duration _weeklyWorkingTime = Duration(hours: 40, minutes: 0);
   int _numberOfWorkingDayPerWeek = 5;
 
-  //needed for menu
-/*
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final gehenTextController = TextEditingController();
 
-  void showInSnackBar(String value) {
-    print("-------------------------");
-    print(_scaffoldKey.currentState);
-    _scaffoldKey.currentState.showSnackBar(SnackBar(
-      content: Text(value),
-    ));
+  _updateDuration(int value) {
+    print("This value was asyncronously updated: $value");
+    _weeklyWorkingTime = Duration(hours: value, minutes: 42);
   }
 
-  void showMenuSelection(String value) {
-    showInSnackBar('You selected: $value');
-  }*/
-
-
-  TimeOfDay _calculateEnd() {
+  void _calculateEnd() {
+    print("calcutate End");
+    //persData.getWorkingHoursPerWeek().then((onValue) => _updateDuration(onValue));
+    _updateDuration(persData.getWorkingHoursPerWeek());
+    print("WeeklyWorkingHours = $_weeklyWorkingTime");
     Duration _hoursPerDayWithBreak =
         _weeklyWorkingTime ~/ _numberOfWorkingDayPerWeek + _break;
     Duration _toLeave = _hoursPerDayWithBreak +
         Duration(hours: _start.hour, minutes: _start.minute);
 
-    return TimeOfDay(
+    _end = TimeOfDay(
         hour: _toLeave.inHours % 24, minute: _toLeave.inMinutes % 60);
-//return TimeOfDay.now();
+    gehenTextController.text =
+        _end.hour.toString() + ":" + _end.minute.toString();
+    setState(() {
+
+    });
   }
 
   @override
   void initState() {
     super.initState();
-    _calculateEnd();
+    gehenTextController.text = "invalid";
+    persData.init().then((onValue) => _calculateEnd());
   }
 
   @override
@@ -234,12 +235,8 @@ class _MyHomePageState extends State<MyHomePage> {
               labelText: 'From',
               selectedTime: _start,
               selectTime: (TimeOfDay time) {
-                setState(() {
-                  _start = time;
-                  _end = _calculateEnd();
-                  print(_start);
-                  print(_end);
-                });
+                _calculateEnd();
+                _start = time;
               },
             ),
             Padding(
@@ -249,9 +246,16 @@ class _MyHomePageState extends State<MyHomePage> {
                 style: Theme.of(context).textTheme.display1,
               ),
             ),
-            Text(
-              _end.hour.toString() + ":" + _end.minute.toString(),
+/*            Text(
+            _end.hour.toString() + ":" + _end.minute.toString(),
               style: Theme.of(context).textTheme.display1,
+            )*/
+            TextField(
+              controller: gehenTextController,
+              style: Theme
+                  .of(context)
+                  .textTheme
+                  .display1,
             )
           ],
         ),
