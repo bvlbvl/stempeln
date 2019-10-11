@@ -195,7 +195,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
         actions: <Widget>[
           PopupMenuButton<String>(
-              onSelected: onSelectionOptions,
+              onSelected: _onSelectionOptions,
               itemBuilder: (BuildContext context) =>
               <PopupMenuItem<String>>[
                 const PopupMenuItem<String>(
@@ -263,12 +263,18 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  void onSelectionOptions(String value) {
+  void _onSelectionOptions(String value) async {
     print("---------");
     print(value);
-    Navigator.push(
+    final result = await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => OptionsRoute()),
+
     );
+    //if (result == true) {
+    print("got back from options. result : $result");
+    _calculateEnd();
+    //}
+
   }
 }
