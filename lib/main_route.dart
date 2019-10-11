@@ -216,13 +216,28 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             Center(
-              child: _TimePicker(
-                labelText: 'From',
-                selectedTime: _start,
-                selectTime: (TimeOfDay time) {
-                  _start = time;
-                  _calculateEnd();
-                },
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Expanded(
+                      flex: 2,
+                      child: _TimePicker(
+                        labelText: 'From',
+                        selectedTime: _start,
+                        selectTime: (TimeOfDay time) {
+                          _start = time;
+                          _calculateEnd();
+                        },
+                      )),
+                  Expanded(
+                    child: RaisedButton(
+                      onPressed: _setStartToNow,
+                      child: Text("Jetzt", semanticsLabel: "Raised button 1",),
+                    ),
+                    flex: 1,
+                  )
+                ],
               ),
             ),
             Padding(
@@ -259,6 +274,11 @@ class _MyHomePageState extends State<MyHomePage> {
     );
 
     print("got back from options. result : $result");
+    _calculateEnd();
+  }
+
+  void _setStartToNow() {
+    _start = TimeOfDay.now();
     _calculateEnd();
   }
 }
