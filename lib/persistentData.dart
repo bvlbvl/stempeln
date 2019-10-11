@@ -1,5 +1,8 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
+
+//This is used as a singelton for the entire app to have a single source of
+//properties
 class PersistentData {
   static final PersistentData _instance = PersistentData._internal();
 
@@ -13,18 +16,17 @@ class PersistentData {
     "numberOfMinutesBreak"
   ];
 
+  //TODO: actually not needed
   bool valid = false;
 
   PersistentData._internal() {
-    // init things inside this
-
     valid = true;
   }
 
+  //shall be called in the first route asynchronously to be sure,
+  // that the data is loaded
   Future<bool> init() async {
     for (var i = 0; i < _persistentDataCache.length; i++) {
-/*      _read(_persistendDataKeys[i])
-          .then((onValue) => _persistentDataCache[i] = onValue);*/
       _persistentDataCache[i] = await _read(_persistendDataKeys[i]);
     }
     print("init of persistent data");
@@ -46,13 +48,41 @@ class PersistentData {
   }
 
   int getWorkingHoursPerWeek() {
-    //_read(_persistendDataKeys[0]).then((onValue)=>_persistentDataCache[0] = onValue);
-    //return _read(_persistendDataKeys[0]);
     return _persistentDataCache[0];
   }
 
   void setWorkingHoursPerWeek(int value) {
-    _save(_persistendDataKeys[0], value);
-    _persistentDataCache[0] = value;
+    if (value > 1 && value < 24 * 7) {
+      _save(_persistendDataKeys[0], value);
+      _persistentDataCache[0] = value;
+    } else {
+      print("wrong number of working hours");
+    }
+  }
+
+  int getWorkingDaysPerWeek() {
+    return _persistentDataCache[1];
+  }
+
+  void setWorkingDaysPerWeek(int value) {
+    if (value > 1 && value < 7) {
+      _save(_persistendDataKeys[1], value);
+      _persistentDataCache[1] = value;
+    } else {
+      print("wrong number of working days");
+    }
+  }
+
+  int getBreak() {
+    return _persistentDataCache[2];
+  }
+
+  void setBreak(int value) {
+    if (value >= 0 && value < 60) {
+      _save(_persistendDataKeys[2], value);
+      _persistentDataCache[2] = value;
+    } else {
+      print("wrong number of minutes of break: $value");
+    }
   }
 }
