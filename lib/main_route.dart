@@ -196,7 +196,7 @@ class _MyHomePageState extends State<MyHomePage> {
               itemBuilder: (BuildContext context) =>
               <PopupMenuItem<String>>[
                 const PopupMenuItem<String>(
-                    child: Text('Einstelungen'),
+                    child: Text('Einstellungen'),
                     value: "Einstellungen value")
               ])
         ],
@@ -258,6 +258,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     .textTheme
                     .display1,
                 readOnly: true,
+                enableInteractiveSelection: false,
               ),
             )
           ],
